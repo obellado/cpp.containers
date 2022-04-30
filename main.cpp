@@ -1,121 +1,139 @@
 #include <iostream>
-#include <string>
-#include <deque>
-// #if 1 //CREATE A REAL STL EXAMPLE
-// 	#include <map>
-// 	#include <stack>
-// 	#include <vector>
-// 	namespace ft = std;
-// #else
-// 	#include <map.hpp>
-// 	#include <stack.hpp>
-// 	#include <vector.hpp>
-// #endif
+#include <sys/time.h>
 
-	#include <map>
-	#include <stack>
-	#include <vector>
-	namespace ft = std;
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define PURPLE "\033[35m"
+#define RESET "\033[0m"
 
-#include <stdlib.h>
+// #include <map>
+// #include <stack>
+// #include <vector>
 
-#define MAX_RAM 4294967296
-#define BUFFER_SIZE 4096
-struct Buffer
-{
-	int idx;
-	char buff[BUFFER_SIZE];
-};
+// #include <stdlib.h>
+// #include "stack.hpp"
 
+struct timeval tv_start;
+struct timeval tv_stop;
+struct timeval tv_diff;
 
-#define COUNT (MAX_RAM / (int)sizeof(Buffer))
+#if true
+# define NS "-------- std --------"
+// # include <vector>
+# include <stack>
+// # include <iterator>
+// # include <utility>
+// # include <map>
+// # include <set>
+namespace ft = std;
+#else
+# define NS "--------- ft --------"
+// # include "vector.hpp"
+# include "stack.hpp"
+// # include "iterators/iterator.hpp"
+// # include "iterators/iterator_traits.hpp"
+// # include "iterators/reverse_iterator.hpp"
+// # include "iterators/Ptrit.hpp"
+// # include "utils/utility.hpp"
+// # include "tree/map.hpp"
+// # include "tree/set.hpp"
+#endif
 
-template<typename T>
-class MutantStack : public ft::stack<T>
-{
-public:
-	MutantStack() {}
-	MutantStack(const MutantStack<T>& src) { *this = src; }
-	MutantStack<T>& operator=(const MutantStack<T>& rhs) 
-	{
-		this->c = rhs.c;
-		return *this;
-	}
-	~MutantStack() {}
+void startTimer() {
+    gettimeofday(&tv_start, NULL);
+}
 
-	typedef typename ft::stack<T>::container_type::iterator iterator;
+void stopTimer() {
+    gettimeofday(&tv_stop, NULL);
+}
 
-	iterator begin() { return this->c.begin(); }
-	iterator end() { return this->c.end(); }
-};
+void printTimerDiff() {
+    tv_diff.tv_sec = tv_stop.tv_sec - tv_start.tv_sec;
+    tv_diff.tv_usec = tv_stop.tv_usec - tv_start.tv_usec;
+    printf("mcs\t= %li\n", tv_diff.tv_sec * 1000000 + tv_diff.tv_usec);
+    printf("ms\t= %li\n", tv_diff.tv_sec * 1000 + tv_diff.tv_usec / 1000);
+    printf("s\t= %li\n", tv_diff.tv_sec + tv_diff.tv_usec / 1000000);
+}
 
-int main(int argc, char** argv) {
-	if (argc != 2)
-	{
-		std::cerr << "Usage: ./test seed" << std::endl;
-		std::cerr << "Provide a seed please" << std::endl;
-		std::cerr << "Count value:" << COUNT << std::endl;
-		return 1;
-	}
-	const int seed = atoi(argv[1]);
-	srand(seed);
+void stack_test() {
+    std::cout << PURPLE << "------- stack -------" << std::endl;
+    startTimer();
+    /* stack */
+    ft::stack<int> stack;
+    std::cout << "stack:\t\tdefault" << std::endl;
 
-	ft::vector<std::string> vector_str;
-	ft::vector<int> vector_int;
-	ft::stack<int> stack_int;
-	ft::vector<Buffer> vector_buffer;
-	ft::stack<Buffer, std::deque<int> > stack_deq_buffer;
-	ft::map<int, int> map_int;
+    bool empty = stack.empty();
+    std::cout << "empty:\t\t" << std::boolalpha << empty << std::endl;
 
-	for (int i = 0; i < COUNT; i++)
-	{
-		vector_buffer.push_back(Buffer());
-	}
+    ft::stack<int>::size_type size = stack.size();
+    std::cout << "size:\t\t" << size << std::endl;
 
-	for (int i = 0; i < COUNT; i++)
-	{
-		const int idx = rand() % COUNT;
-		vector_buffer[idx].idx = 5;
-	}
-	ft::vector<Buffer>().swap(vector_buffer);
+    const ft::stack<int>::value_type &to_push = 5;
+    stack.push(to_push);
+    std::cout << "push:\t\t" << to_push << std::endl;
 
-	try
-	{
-		for (int i = 0; i < COUNT; i++)
-		{
-			const int idx = rand() % COUNT;
-			vector_buffer.at(idx);
-			std::cerr << "Error: THIS VECTOR SHOULD BE EMPTY!!" <<std::endl;
-		}
-	}
-	catch(const std::exception& e)
-	{
-		//NORMAL ! :P
-	}
-	
-	for (int i = 0; i < COUNT; ++i)
-	{
-		map_int.insert(ft::make_pair(rand(), rand()));
-	}
+    empty = stack.empty();
+    std::cout << "empty:\t\t" << std::boolalpha << empty << std::endl;
 
-	int sum = 0;
-	for (int i = 0; i < 10000; i++)
-	{
-		int access = rand();
-		sum += map_int[access];
-	}
-	std::cout << "should be constant with the same seed: " << sum << std::endl;
+    size = stack.size();
+    std::cout << "size:\t\t" << size << std::endl;
 
-	{
-		ft::map<int, int> copy = map_int;
-	}
-	MutantStack<char> iterable_stack;
-	for (char letter = 'a'; letter <= 'z'; letter++)
-		iterable_stack.push(letter);
-	for (MutantStack<char>::iterator it = iterable_stack.begin(); it != iterable_stack.end(); it++)
-	{
-		std::cout << *it;
-	}
-	std::cout << std::endl;
-	return (0);
+    if (empty == false) {
+        ft::stack<int>::value_type &top = stack.top();
+        std::cout << "top:\t\t" << top << std::endl;
+
+        stack.pop();
+        std::cout << "pop:\t\t" << to_push << std::endl;
+    }
+
+    ft::stack<int> copy_stack;
+    std::cout << "stack:\t\tfor copy" << std::endl;
+
+    copy_stack.push(to_push);
+    std::cout << "push:\t\t" << to_push << std::endl;
+
+    const ft::stack<int> const_stack = copy_stack;
+    std::cout << "stack:\t\tconst" << std::endl;
+
+    const ft::stack<int>::value_type &const_top = const_stack.top();
+    std::cout << "const top:\t" << const_top << std::endl;
+
+    ft::stack<int> stack1;
+    std::cout << "stack1:\t\tcompare" << std::endl;
+
+    ft::stack<int> stack2;
+    std::cout << "stack2:\t\tcompare" << std::endl;
+
+    bool compare = stack1 == stack2;
+    std::cout << "==:\t\t" << std::boolalpha << compare << std::endl;
+
+    compare = stack1 != stack2;
+    std::cout << "!=:\t\t" << std::boolalpha << compare << std::endl;
+
+    compare = stack1 < stack2;
+    std::cout << "<:\t\t" << std::boolalpha << compare << std::endl;
+
+    compare = stack1 > stack2;
+    std::cout << ">:\t\t" << std::boolalpha << compare << std::endl;
+
+    compare = stack1 <= stack2;
+    std::cout << "<=:\t\t" << std::boolalpha << compare << std::endl;
+
+    compare = stack1 >= stack2;
+    std::cout << ">=:\t\t" << std::boolalpha << compare << std::endl;
+    /* stack */
+    stopTimer();
+    std::cout << "---------------------" << RESET << std::endl;
+    std::cout << YELLOW << "---- stack timer ----" << std::endl;
+    printTimerDiff();
+    std::cout << "---------------------" << RESET << std::endl;
+}
+
+int main() {
+    std::cout << GREEN << NS << RESET << std::endl;
+
+    stack_test();
+
+	return 0;
 }
