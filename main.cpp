@@ -18,9 +18,9 @@ struct timeval tv_start;
 struct timeval tv_stop;
 struct timeval tv_diff;
 
-#if true
+#if false
 # define NS "-------- std --------"
-// # include <vector>
+# include <vector>
 # include <stack>
 // # include <iterator>
 // # include <utility>
@@ -29,7 +29,7 @@ struct timeval tv_diff;
 namespace ft = std;
 #else
 # define NS "--------- ft --------"
-// # include "vector.hpp"
+# include "vector.hpp"
 # include "stack.hpp"
 // # include "iterators/iterator.hpp"
 // # include "iterators/iterator_traits.hpp"
@@ -56,8 +56,8 @@ void printTimerDiff() {
     printf("s\t= %li\n", tv_diff.tv_sec + tv_diff.tv_usec / 1000000);
 }
 
-void stack_test() {
-    std::cout << PURPLE << "------- stack -------" << std::endl;
+void stackTest() {
+    std::cout << YELLOW << "###### stack ######" << RESET  << std::endl;
     startTimer();
     /* stack */
     ft::stack<int> stack;
@@ -124,8 +124,30 @@ void stack_test() {
     std::cout << ">=:\t\t" << std::boolalpha << compare << std::endl;
     /* stack */
     stopTimer();
+    std::cout << RED << "---------------------" << std::endl;
+    std::cout << "#### stack timer ####" << std::endl;
+    printTimerDiff();
     std::cout << "---------------------" << RESET << std::endl;
-    std::cout << YELLOW << "---- stack timer ----" << std::endl;
+}
+
+void    vectorTest() {
+    std::cout << YELLOW << "###### vector ######" << RESET << std::endl;
+    startTimer();
+    ft::vector<int> vector;
+    std::cout << "vector:\t\tdefault" << std::endl;
+
+    ft::vector<std::string> vector1(10);
+    std::cout << "vector:\t\t10" << std::endl;
+
+    ft::vector<int> vector2(5, 10);
+    std::cout << "vector:\t\t5" << std::endl;
+
+    // bool empty = stack.empty();
+    // std::cout << "empty:\t\t" << std::boolalpha << empty << std::endl;
+
+    stopTimer();
+    std::cout << RED << "---------------------" << std::endl;
+    std::cout << "#### vector timer ###" << std::endl;
     printTimerDiff();
     std::cout << "---------------------" << RESET << std::endl;
 }
@@ -133,7 +155,8 @@ void stack_test() {
 int main() {
     std::cout << GREEN << NS << RESET << std::endl;
 
-    stack_test();
+    stackTest();
+    vectorTest();
 
 	return 0;
 }
