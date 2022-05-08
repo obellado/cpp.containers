@@ -20,23 +20,19 @@ namespace ft {
 			typedef typename allocator_type::pointer pointer;
 			typedef typename allocator_type::const_pointer const_pointer;
 
-			// typedef ft::_iterator<pointer> iterator;
-			// typedef ft::_iterator<const_pointer> const_iterator;
-			// typedef ft::_reverse_iterator<iterator> reverse_iterator;
-			// typedef ft::_reverse_iterator<const_iterator> const_reverse_iterator;
+			// typedef std::iterator<pointer> iterator;
+			// typedef std::iterator<const_pointer> const_iterator;
+			// typedef std::reverse_iterator<iterator> reverse_iterator;
+			// typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-			explicit vector (const allocator_type& alloc = allocator_type()) : _pointer(0), _size(0), _capacity(0), _alloc(alloc)  {
-				std::cout << "constructor default\n";
-			}
+			explicit vector (const allocator_type& alloc = allocator_type()) : _pointer(0), _size(0), _capacity(0), _alloc(alloc)  {}
 
 			explicit vector (size_type n, const value_type& val = value_type(),
-					const allocator_type& alloc = allocator_type()) : _size(n), _capacity(n), _alloc(alloc){
-				
+					const allocator_type& alloc = allocator_type()) : _size(n), _capacity(n), _alloc(alloc) {
 				_pointer = _alloc.allocate(n);
             	for (size_type i = 0; i < n; ++i) {
                 	_alloc.construct(_pointer + i, val);
 				}
-				std::cout << "constructor\n";
 			}
 
 			template< class InputIt >
@@ -55,24 +51,57 @@ namespace ft {
 			}
 
 			virtual ~vector() {
-				for (size_type i = 0; i < _size; i++)
-					_alloc.destroy(&_pointer[i]);
-				std::cout << "1\n";
-				if (_capacity != 0)
-					_alloc.deallocate(_pointer, _capacity);
-				std::cout << "2\n";
+				_deletePointer();
+			}
+
+			size_type size() const {
+				return (_size);
+			}
+
+			size_type max_size() const {
+				return (_alloc.max_size());
 			}
 
 			// vector& operator= (const vector& other) {}
 
-		// 	template <class InputIterator>
-		// 	void assign (InputIterator first, InputIterator last) {}
+			// template< class InputIt >
+			// void assign( InputIt first, InputIt last ) {
 
-		// 	void assign (size_type n, const value_type& val) {}
+			// }
 
-		// 	reference at (size_type n) {}
+			void assign( size_type count, const T& value ) {
+				if (count > this->max_size())
+					throw std::length_error("length_error");
+				if (count < _capacity) {
+					for (size_type i = 0; i < _size; i++)
+						_alloc.destroy(&_pointer[i]);
+				}
+				else {
+					try {
+						pointer newPointer = _alloc.allocate(_size * 2);
+						_copy(0, count, newPointer, _pointer);
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity *= 2;
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
+				}
+				_copy(0, count, value);
+				_size = count;
+			}
 
-		// 	const_reference at (size_type n) const {}
+			reference at (size_type n) {
+				if (n >= _size)
+					throw std::out_of_range("out_of_range");
+				return (_pointer[n]);
+			}
+
+			const_reference at (size_type n) const {
+				if (n >= _size)
+						throw std::out_of_range("out_of_range");
+					return (_pointer[n]);
+			}
 
 		// 	reference back() {}
 
@@ -82,7 +111,9 @@ namespace ft {
 
 		// 	const_iterator begin() const {}
 
-		// 	size_type capacity() const {}
+			size_type capacity() const {
+				return (_capacity);
+			}
 
 		// // const_iterator cbegin() const noexcept {}
 
@@ -103,7 +134,9 @@ namespace ft {
 		// // template <class... Args>
 		// // void emplace_back (Args&&... args) {}
 
-		// 	bool empty() const {}
+			bool empty() const {
+				return (_size == 0);
+			}
 		
 		// 	iterator end() {}
 
@@ -126,15 +159,34 @@ namespace ft {
 		// 	template <class InputIterator>
 		// 	void insert (iterator position, InputIterator first, InputIterator last) {}
 
-		// 	size_type max_size() const {}
+			reference operator[] (size_type n) {
+				return (_pointer[n]);
+			}
 
-		// 	reference operator[] (size_type n) {}
+			const_reference operator[] (size_type n) const {
+				return (_pointer[n]);
+			}
 
-		// 	const_reference operator[] (size_type n) const {}
+			void pop_back() {
+				if (_size > 0) {
+					_alloc.destroy(&_pointer[--_size]);
+				}
+			}
 
-		// 	void pop_back() {}
-
-		// 	void push_back (const value_type& val) {}
+			void push_back(const value_type& val) {
+				if (_size == _capacity) {
+					try {
+						pointer newPointer = _alloc.allocate(_size * 2);
+						_copy(0, _size, newPointer, _pointer);
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity *= 2;
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
+				}
+				_alloc.construct(&_pointer[_size++], val);
+			}
 
 		// 	reverse_iterator rbegin() {}
 
@@ -152,13 +204,31 @@ namespace ft {
 
 		// 	void swap (vector& x) {}
 
-		// 	size_type size() const {}
 
 		protected:
 			pointer				_pointer;
 			size_type			_size;
 			size_type			_capacity;
 			allocator_type		_alloc;
+
+		private:
+
+			void _deletePointer( void ) {
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(&_pointer[i]);
+				if (_capacity != 0)
+					_alloc.deallocate(_pointer, _capacity);
+			}
+
+			void	_copy(int start, int count, pointer dst, pointer src) {
+				for (int i = 0; i < count; i++)
+					_alloc.construct(&dst[start + i], src[i]);
+			}
+
+			void	_copy(int start, int count, value_type val) {
+				for (int i = 0; i < count; i++)
+					_alloc.construct(&_pointer[start + i], val);
+			}
 	};
 
 

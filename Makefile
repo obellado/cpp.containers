@@ -6,7 +6,7 @@ OBJS		= ${SRCS:.cpp=.o}
 
 CMPL		= clang++
 
-FLGS		= -Wall -Wextra -Werror -std=c++98
+FLGS		= -Wall -Wextra -Werror 
 
 RM			= rm -f
 

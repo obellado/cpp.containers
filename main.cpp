@@ -131,31 +131,44 @@ void stackTest() {
 }
 
 void    vectorTest() {
-    std::cout << YELLOW << "###### vector ######" << RESET << std::endl;
+    
+    std::cout << RED << "###### vector ######" << std::endl;
     startTimer();
-    ft::vector<int> vector;
-    std::cout << "vector:\t\tdefault" << std::endl;
+    ft::vector<int> vectorDefault;
+    std::cout << "vector:\t\t\t\tdefault" << std::endl;
 
-    ft::vector<std::string> vector1(10);
-    std::cout << "vector:\t\t10" << std::endl;
+    ft::vector<std::string> vector(5, "hi");
 
-    ft::vector<int> vector2(5, 10);
-    std::cout << "vector:\t\t5" << std::endl;
+    std::cout << "vector of strings:\t\t" << vector[4] << std::endl;
+ 
+    vector.push_back("bye");
+    vector.push_back("bye");
+    vector.push_back("bye");
+    vector.push_back("bye");
+    vector.push_back("bye");
+    vector.push_back("bye");
+    std::cout << "vector after push_back:\t\t" << vector[10] << std::endl;
 
-    // bool empty = stack.empty();
-    // std::cout << "empty:\t\t" << std::boolalpha << empty << std::endl;
+    std::cout << "vector1's max_size():\t\t" << vector.max_size() << std::endl;
+    std::cout << "vector1's size:\t\t\t" << vector.size() << std::endl;
+    std::cout << "vector1's capacity:\t\t" << vector.capacity() << std::endl;
+
+    std::string aloha = "aloha";
+    vector.assign(3, aloha);
+    std::cout << "vector after assign :\t\t" << vector[1] << std::endl;
+    
 
     stopTimer();
-    std::cout << RED << "---------------------" << std::endl;
-    std::cout << "#### vector timer ###" << std::endl;
+    std::cout << GREEN << "----------------------" << std::endl;
+    std::cout << "#### vector timer ####" << std::endl;
     printTimerDiff();
-    std::cout << "---------------------" << RESET << std::endl;
+    std::cout << "----------------------" << RESET << std::endl;
 }
 
 int main() {
     std::cout << GREEN << NS << RESET << std::endl;
 
-    stackTest();
+    // stackTest();
     vectorTest();
 
 	return 0;
