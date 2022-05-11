@@ -62,7 +62,21 @@ namespace ft {
 				return (_alloc.max_size());
 			}
 
-			// vector& operator= (const vector& other) {}
+			vector& operator= (const vector& other) {
+				if (this == &other)
+					return (*this);
+				try {
+					_deletePointer();
+					_alloc = other._alloc;
+					_capacity = other._capacity;
+					_size = other._size;
+					_pointer = _alloc.allocate(_capacity);
+					_copy(0, _size, _pointer, other._pointer);
+				} catch (std::bad_alloc & e) {
+					throw e;
+				}
+				return (*this);
+			}
 
 			// template< class InputIt >
 			// void assign( InputIt first, InputIt last ) {
@@ -99,13 +113,17 @@ namespace ft {
 
 			const_reference at (size_type n) const {
 				if (n >= _size)
-						throw std::out_of_range("out_of_range");
-					return (_pointer[n]);
+					throw std::out_of_range("out_of_range");
+				return (_pointer[n]);
 			}
 
-		// 	reference back() {}
+			reference back() {
+				return (_pointer[_size - 1]);
+			}
 
-		// 	const_reference back() const {}
+			const_reference back() const {
+				return (_pointer[_size - 1]);
+			}
 
 		// 	iterator begin() {}
 
@@ -119,7 +137,11 @@ namespace ft {
 
 		// // const_iterator cend() const noexcept {}
 
-		// 	void clear() {}
+			void clear() {
+				for (size_type i = 0; i < _size; i++)
+					_alloc.destroy(&_pointer[i]);
+				_size = 0;
+			}
 
 		// // const_reverse_iterator crbegin() const noexcept {}
 
@@ -146,11 +168,17 @@ namespace ft {
 		
 		// 	iterator erase (iterator first, iterator last) {}
 
-		// 	reference front() {}
+			reference front() {
+				return (_pointer[0]);
+			}
 		
-		// 	const_reference front() const {}
+			const_reference front() const {
+				return (_pointer[0]);
+			}
 
-		// 	allocator_type get_allocator() const {}
+			allocator_type get_allocator() const {
+				return (_alloc);
+			}
 
 		// 	iterator insert (iterator position, const value_type& val) {}
 
@@ -196,13 +224,53 @@ namespace ft {
 		
 		// 	const_reverse_iterator rend() const {}
 
-		// 	void reserve (size_type n) {}
+			void reserve (size_type new_cap) {
+				if (new_cap > this->max_size())
+					throw std::length_error("length_error");
+				if (new_cap <= _capacity)
+					return ;
+				try {
+					pointer _newPointer = _alloc.allocate(new_cap);
+					_copy(0, _size, _newPointer, _pointer);
+					_deletePointer();
+					_pointer = _newPointer;
+					_capacity = new_cap;
+				} catch (std::bad_alloc & e) {
+					throw e;
+				}
+			}
 
-		// 	void resize (size_type n, value_type val = value_type()) {}
+			void resize( size_type count, T value = T() ) {
+				if (count > this->max_size())
+					throw std::length_error("length_error");
+				if (count < _size) {
+					for (size_type i = count; i < _size; i++)
+						_alloc.destroy(&_pointer[i]);
+				} else if (count < _capacity){
+					_copy(_size, count, value);
+				} else {
+					try {
+						pointer _newPointer = _alloc.allocate(count * 2);
+						_copy(0, _size, _newPointer, _pointer);
+						_deletePointer();
+						_capacity = count * 2;
+						_pointer = _newPointer;
+						_copy(_size, count, value);
+						_size = count;
+					} catch (std::bad_alloc &e) {
+						throw e;
+					}
+				}
+			}
 
 		// 	void shrink_to_fit() {}
 
-		// 	void swap (vector& x) {}
+			void swap (vector& other) {
+				std::swap(this->_pointer, other._pointer);
+				std::swap(this->_alloc, other._alloc);
+				std::swap(this->_size, other._size);
+				std::swap(this->_capacity, other._capacity);
+			}
 
 
 		protected:

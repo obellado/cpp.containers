@@ -149,14 +149,25 @@ void    vectorTest() {
     vector.push_back("bye");
     std::cout << "vector after push_back:\t\t" << vector[10] << std::endl;
 
-    std::cout << "vector1's max_size():\t\t" << vector.max_size() << std::endl;
-    std::cout << "vector1's size:\t\t\t" << vector.size() << std::endl;
-    std::cout << "vector1's capacity:\t\t" << vector.capacity() << std::endl;
+    std::cout << "vector's max_size():\t\t" << vector.max_size() << std::endl;
+    std::cout << "vector's size:\t\t\t" << vector.size() << std::endl;
+    std::cout << "vector's capacity:\t\t" << vector.capacity() << std::endl;
 
     std::string aloha = "aloha";
     vector.assign(3, aloha);
     std::cout << "vector after assign :\t\t" << vector[1] << std::endl;
-    
+
+    ft::vector<std::string> vector1(5, "hi");
+    vector1 = vector;
+    std::cout << "vector after operator= :\t" << vector1[1] << std::endl;
+    vector1.resize(2, "hi");
+    std::cout << "vector after resize 1 :\t\t" << vector1[1] << std::endl;
+    vector1.resize(5, "hi");
+    std::cout << "vector after resize 1 :\t\t" << vector1[4] << std::endl;
+    vector1.resize(31, "bye");
+    std::cout << "vector after resize 1 :\t\t" << vector1[30] << std::endl;
+    vector1.reserve(100);
+    std::cout << "vector's capacity:\t\t" << vector1.capacity() << std::endl;
 
     stopTimer();
     std::cout << GREEN << "----------------------" << std::endl;
