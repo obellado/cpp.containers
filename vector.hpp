@@ -78,12 +78,35 @@ namespace ft {
 				return (*this);
 			}
 
-			// template< class InputIt >
-			// void assign( InputIt first, InputIt last ) {
-
-			// }
+			template< class InputIt >
+			void assign( InputIt first, InputIt last, typename ft::enable_if<std::numeric_limits<InputIt>::value >::type ) {
+				size_type count = _count(first, last);
+				std::cout << "ASSIGN template\n";
+				if (count > this->max_size())
+					throw std::length_error("length_error");
+				if (count < _capacity) {
+					for (size_type i = 0; i < _size; i++)
+						_alloc.destroy(&_pointer[i]);
+				}
+				else {
+					try {
+						pointer newPointer = _alloc.allocate(_size * 2);
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity *= 2;
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
+				}
+				size_type i = 0;
+				for (; first != last; ++first) {
+					_alloc.construct(&_pointer[i++], *first);
+				}
+				_size = count;
+			}
 
 			void assign( size_type count, const T& value ) {
+				std::cout << "ASSIGN int int\n";
 				if (count > this->max_size())
 					throw std::length_error("length_error");
 				if (count < _capacity) {
@@ -125,41 +148,28 @@ namespace ft {
 				return (_pointer[_size - 1]);
 			}
 
-		// 	iterator begin() {}
-
-		// 	const_iterator begin() const {}
-
 			size_type capacity() const {
 				return (_capacity);
 			}
-
-		// // const_iterator cbegin() const noexcept {}
-
-		// // const_iterator cend() const noexcept {}
-
+			
 			void clear() {
 				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(&_pointer[i]);
 				_size = 0;
 			}
 
-		// // const_reverse_iterator crbegin() const noexcept {}
+		// 	iterator begin() {}
 
-		// // const_reverse_iterator crend() const noexcept {}
+		// 	const_iterator begin() const {}
 
-		// // value_type* data() noexcept {}
-		// // const value_type* data() const noexcept {}
+		// const_iterator cbegin() const noexcept {}
 
-		// // template <class... Args>
-		// // iterator emplace (const_iterator position, Args&&... args) {}
+		// const_iterator cend() const noexcept {}
 
-		// // template <class... Args>
-		// // void emplace_back (Args&&... args) {}
+		// const_reverse_iterator crbegin() const noexcept {}
 
-			bool empty() const {
-				return (_size == 0);
-			}
-		
+		// const_reverse_iterator crend() const noexcept {}
+
 		// 	iterator end() {}
 
 		// 	const_iterator end() const {}
@@ -167,6 +177,32 @@ namespace ft {
 		// 	iterator erase (iterator position) {}
 		
 		// 	iterator erase (iterator first, iterator last) {}
+
+		// 	reverse_iterator rbegin() {}
+
+		// 	const_reverse_iterator rbegin() const {}
+
+		// 	reverse_iterator rend() {}
+		
+		// 	const_reverse_iterator rend() const {}
+
+			T* data() {
+				if (_size == 0) {
+					return NULL;
+				}
+				return (&_pointer[0]);
+			}
+
+			const T* data() const {
+				if (_size == 0) {
+					return NULL;
+				}
+				return (&_pointer[0]);
+			}
+
+			bool empty() const {
+				return (_size == 0);
+			}
 
 			reference front() {
 				return (_pointer[0]);
@@ -180,12 +216,21 @@ namespace ft {
 				return (_alloc);
 			}
 
-		// 	iterator insert (iterator position, const value_type& val) {}
+		// 	iterator insert( iterator pos, const T& value );
 
-		// 	void insert (iterator position, size_type n, const value_type& val) {}
+			void insert( iterator pos, size_type count, const T& value ) {
+				if (_size + count > this->max_size())
+					throw std::length_error("length_error");
+				if (_size + count <= _capacity) {
+					//
+				} else {
+					//
+				}
+				_size += count;
+			}
 
-		// 	template <class InputIterator>
-		// 	void insert (iterator position, InputIterator first, InputIterator last) {}
+			// template< class InputIt >
+			// void insert( iterator pos, InputIt first, InputIt last );
 
 			reference operator[] (size_type n) {
 				return (_pointer[n]);
@@ -215,14 +260,6 @@ namespace ft {
 				}
 				_alloc.construct(&_pointer[_size++], val);
 			}
-
-		// 	reverse_iterator rbegin() {}
-
-		// 	const_reverse_iterator rbegin() const {}
-
-		// 	reverse_iterator rend() {}
-		
-		// 	const_reverse_iterator rend() const {}
 
 			void reserve (size_type new_cap) {
 				if (new_cap > this->max_size())
@@ -263,8 +300,6 @@ namespace ft {
 				}
 			}
 
-		// 	void shrink_to_fit() {}
-
 			void swap (vector& other) {
 				std::swap(this->_pointer, other._pointer);
 				std::swap(this->_alloc, other._alloc);
@@ -296,6 +331,17 @@ namespace ft {
 			void	_copy(int start, int count, value_type val) {
 				for (int i = 0; i < count; i++)
 					_alloc.construct(&_pointer[start + i], val);
+			}
+
+			template<typename InputIt>
+			size_type _count(InputIt first, InputIt last)
+			{
+				size_type count;
+
+				count = 0;
+				for ( ; first != last; ++first)
+					count++;
+				return (count);
 			}
 	};
 

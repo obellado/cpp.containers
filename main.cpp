@@ -138,6 +138,7 @@ void    vectorTest() {
     std::cout << "vector:\t\t\t\tdefault" << std::endl;
 
     ft::vector<std::string> vector(5, "hi");
+    ft::vector<int> vectorInt(5, 5);
 
     std::cout << "vector of strings:\t\t" << vector[4] << std::endl;
  
@@ -156,6 +157,13 @@ void    vectorTest() {
     std::string aloha = "aloha";
     vector.assign(3, aloha);
     std::cout << "vector after assign :\t\t" << vector[1] << std::endl;
+
+    // ft::vector<int> v(4, 8);
+    // std::vector<int>::iterator iter1 = v.begin();
+    // std::vector<int>::iterator iter2 = v.end();
+
+    // vectorDefault.assign(iter1, iter2);
+    // std::cout << "vector after assign :\t\t" << vectorInt[1] << std::endl;
 
     ft::vector<std::string> vector1(5, "hi");
     vector1 = vector;
