@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include "enable_if.hpp"
+#include <iterator>
 
 namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
@@ -20,10 +21,10 @@ namespace ft {
 			typedef typename allocator_type::pointer pointer;
 			typedef typename allocator_type::const_pointer const_pointer;
 
-			// typedef std::iterator<pointer> iterator;
-			// typedef std::iterator<const_pointer> const_iterator;
-			// typedef std::reverse_iterator<iterator> reverse_iterator;
-			// typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+			typedef std::iterator<std::input_iterator_tag, value_type, difference_type, pointer, reference> iterator;
+			typedef std::iterator<std::input_iterator_tag, value_type, difference_type, const_pointer, const_reference> const_iterator;
+			typedef std::reverse_iterator<iterator> reverse_iterator;
+			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
 			explicit vector (const allocator_type& alloc = allocator_type()) : _pointer(0), _size(0), _capacity(0), _alloc(alloc)  {}
 
@@ -158,33 +159,41 @@ namespace ft {
 				_size = 0;
 			}
 
-		// 	iterator begin() {}
+			iterator begin() {
+				return (iterator(&_pointer[0]));
+			}
 
-		// 	const_iterator begin() const {}
+			const_iterator begin() const {
+				return (const_iterator(&_pointer[0]));
+			}
 
-		// const_iterator cbegin() const noexcept {}
+			iterator end() {
+				return (iterator(&_pointer[_size]));
+			}
 
-		// const_iterator cend() const noexcept {}
+			const_iterator end() const {
+				return (const_iterator(&_pointer[_size]));
+			}
 
-		// const_reverse_iterator crbegin() const noexcept {}
+			reverse_iterator rbegin() {
+				return (reverse_iterator(this->end() - 1));
+			}
 
-		// const_reverse_iterator crend() const noexcept {}
+			const_reverse_iterator rbegin() const {
+				return (const_reverse_iterator(this->end() - 1));
+			}
 
-		// 	iterator end() {}
+			reverse_iterator rend() {
+				return (reverse_iterator(this->begin() - 1));
+			}
+		
+			const_reverse_iterator rend() const {
+				return (const_reverse_iterator(this->begin() - 1));
+			}
 
-		// 	const_iterator end() const {}
-
-		// 	iterator erase (iterator position) {}
+		// 	iterator erase (iterator pos) {}
 		
 		// 	iterator erase (iterator first, iterator last) {}
-
-		// 	reverse_iterator rbegin() {}
-
-		// 	const_reverse_iterator rbegin() const {}
-
-		// 	reverse_iterator rend() {}
-		
-		// 	const_reverse_iterator rend() const {}
 
 			T* data() {
 				if (_size == 0) {
@@ -216,21 +225,125 @@ namespace ft {
 				return (_alloc);
 			}
 
-		// 	iterator insert( iterator pos, const T& value );
+			iterator insert( iterator pos, const T& value ) {
+				iterator ret;
+				if (_size + 1 > this->max_size())
+					throw std::length_error("length_error");
+				if (_size < _capacity) {
+					size_type i = _size;
+					while (pos.operator->() != &_pointer[i]) {
+						_alloc.destroy(&_pointer[i]);
+						_alloc.construct(&_pointer[i], _pointer[i - 1]);
+						--i;
+					}
+					_alloc.destroy(&_pointer[i]);
+					_alloc.construct(&_pointer[i], value);
+					ret = iterator(&_pointer[i]);
+				} else {
+					try {
+						pointer newPointer = _alloc.allocate(_capacity * 2);
+						size_type i = 0;
+						iterator it = this->begin();
+						iterator ite = this->end();
+						for (;  it != pos; ++it) {
+							_alloc.construct(&newPointer[i++], *it);
+						}
+						_alloc.construct(&newPointer[i], value);
+						ret = iterator(&_pointer[i++]);
+						for (;  it != ite; ++it) {
+							_alloc.construct(&newPointer[i++], *it);
+						}
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity *= 2;		
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
+				}
+				++_size;
+				return (ret);
+			}
 
 			void insert( iterator pos, size_type count, const T& value ) {
 				if (_size + count > this->max_size())
 					throw std::length_error("length_error");
 				if (_size + count <= _capacity) {
-					//
+					size_type i = _size + count;
+					while (pos.operator->() != &_pointer[i]) {
+						_alloc.destroy(&_pointer[i]);
+						_alloc.construct(&_pointer[i], _pointer[i - count]);
+						--i;
+					}
+					for (size_type j = 0; j < count; ++j) {
+						_alloc.destroy(&_pointer[i]);
+						_alloc.construct(&_pointer[i--], value);
+					}
 				} else {
-					//
+					try {
+						iterator it = this->begin();
+						iterator ite = this->end();
+						pointer newPointer = _alloc.allocate((_size + count) * 2);
+						size_type i = 0;
+						for (; it != pos; ++it) {
+							_alloc.construct(&newPointer[i++], *it);
+						}
+						for (size_type j = 0; j < count; ++j) {
+							_alloc.construct(&newPointer[i++], value);
+						}
+						for (;  it != ite; ++it) {
+							_alloc.construct(&newPointer[i++], *it);
+						}
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity = (_size + count) * 2;
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
 				}
 				_size += count;
 			}
 
-			// template< class InputIt >
-			// void insert( iterator pos, InputIt first, InputIt last );
+			template< class InputIt >
+			void insert( iterator pos, InputIt first, InputIt last ) {
+				size_type	count = _count(first, last);
+				if (_size + count > this->max_size())
+					throw std::length_error("length_error");
+				if (_size + count < _capacity) {
+					iterator ite = this->end();
+					size_type i = _size + count;
+					while (ite != pos) {
+						--ite;
+						_alloc.destroy(&_pointer[i]);
+						_alloc.construct(&_pointer[i], *ite);
+					}
+					while (last != first) {
+						_alloc.destroy(&_pointer[i]);
+						_alloc.construct(&_pointer[i--], *last);
+						--last;
+					}
+				} else {
+					try {
+						iterator it = this->begin();
+						iterator ite = this->end();
+						size_type i = 0;
+						pointer newPointer = _alloc.allocate((_size + count) * 2);
+						for (; it != pos; ++it) {
+							_alloc.construct(&newPointer[i++], *it);
+						}
+						for ( ; first != last; ++first) {
+							_alloc.construct(&newPointer[i++], *first);
+						}
+						for (;  pos != ite; ++pos) {
+							_alloc.construct(&newPointer[i++], *pos);
+						}
+						_deletePointer();
+						_pointer = newPointer;
+						_capacity = (_size + count) * 2;
+					} catch (std::bad_alloc & e) {
+						throw e;
+					}
+				}
+			}
 
 			reference operator[] (size_type n) {
 				return (_pointer[n]);
@@ -345,12 +458,28 @@ namespace ft {
 			}
 	};
 
+	template <class InputIt1, class InputIt2>
+	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2)
+	{
+		while (first1 != last1)
+		{
+			if (*first1 != *first2)
+				return (false);
+			first1++;
+			first2++;
+		}
+		return (true);
+	}
 
-	// template <class T, class Alloc>
-	// bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	}
 
-	// template <class T, class Alloc>
-	// bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (!(lhs == rhs));
+	}
 		
 	// template <class T, class Alloc>
 	// bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
@@ -365,8 +494,10 @@ namespace ft {
 	// bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
 
 
-	// template <class T, class Alloc>
-	// void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {}
+	template <class T, class Alloc>
+	void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) {
+		x.swap(y);
+	}
 
 	}
 
