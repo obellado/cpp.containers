@@ -31,10 +31,11 @@ namespace ft = std;
 # define NS "--------- ft --------"
 # include "vector.hpp"
 # include "stack.hpp"
+# include "iterator.hpp"
 // # include "iterators/iterator.hpp"
 // # include "iterators/iterator_traits.hpp"
 // # include "iterators/reverse_iterator.hpp"
-// # include "iterators/Ptrit.hpp"
+// # include "iterators/Shmiterator.hpp"
 // # include "utils/utility.hpp"
 // # include "tree/map.hpp"
 // # include "tree/set.hpp"
@@ -158,18 +159,19 @@ void    vectorTest() {
     vector.assign(3, aloha);
     std::cout << "vector after assign :\t\t" << vector[1] << std::endl;
 
-    // ft::vector<int> v(4, 8);
-    // std::vector<int>::iterator iter1 = v.begin();
-    // std::vector<int>::iterator iter2 = v.end();
 
-    // vectorDefault.assign(iter1, iter2);
-    // std::cout << "vector after assign :\t\t" << vectorInt[1] << std::endl;
 
     ft::vector<std::string> vector1(5, "hi");
     vector1 = vector;
     std::cout << "vector after operator= :\t" << vector1[1] << std::endl;
+    if (vector1 == vector)
+        std::cout << "vectors are equals\t" << std::endl;
     vector1.resize(2, "hi");
     std::cout << "vector after resize 1 :\t\t" << vector1[1] << std::endl;
+    if (vector1 != vector)
+        std::cout << "vectors are not equals after resize\t" << std::endl;
+    if (vector1 <= vector)
+        std::cout << "vector1 are smaller after resize\t" << std::endl;
     vector1.resize(5, "hi");
     std::cout << "vector after resize 1 :\t\t" << vector1[4] << std::endl;
     vector1.resize(31, "bye");

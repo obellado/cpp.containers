@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 #include "enable_if.hpp"
-#include <iterator>
+#include "iterator.hpp"
 
 namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
@@ -21,10 +21,10 @@ namespace ft {
 			typedef typename allocator_type::pointer pointer;
 			typedef typename allocator_type::const_pointer const_pointer;
 
-			typedef std::iterator<std::input_iterator_tag, value_type, difference_type, pointer, reference> iterator;
-			typedef std::iterator<std::input_iterator_tag, value_type, difference_type, const_pointer, const_reference> const_iterator;
-			typedef std::reverse_iterator<iterator> reverse_iterator;
-			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+			typedef ft::Shmiterator<pointer> iterator;
+			typedef ft::Shmiterator<const_pointer> const_iterator;
+			typedef ft::reverse_iterator<iterator> reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 			explicit vector (const allocator_type& alloc = allocator_type()) : _pointer(0), _size(0), _capacity(0), _alloc(alloc)  {}
 
@@ -471,6 +471,23 @@ namespace ft {
 		return (true);
 	}
 
+	template <class InputIterator1, class InputIterator2>
+	bool _compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
+	{
+		while (first1 != last1 && first2 != last2)
+		{
+			if (*first1 < *first2)
+				return (true);
+			if (*first2 < *first1)
+				return (false);
+			++first1;
+			++first2;
+		}
+		if (first2 == last2)
+			return (false);
+		return (true);
+	}
+
 	template <class T, class Alloc>
 	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
 		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
@@ -481,17 +498,25 @@ namespace ft {
 		return (!(lhs == rhs));
 	}
 		
-	// template <class T, class Alloc>
-	// bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (ft::_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
 
-	// template <class T, class Alloc>
-	// bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (lhs < rhs || lhs == rhs);
+	}
 
-	// template <class T, class Alloc>
-	// bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (rhs <= lhs);
+	}
 
-	// template <class T, class Alloc>
-	// bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {}
+	template <class T, class Alloc>
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (rhs < lhs);
+	}
 
 
 	template <class T, class Alloc>
