@@ -1,0 +1,50 @@
+[32m-------- std --------[0m
+[33m###### stack ######[0m
+stack:		default
+empty:		true
+size:		0
+push:		5
+empty:		false
+size:		1
+top:		5
+pop:		5
+stack:		for copy
+push:		5
+stack:		const
+const top:	5
+stack1:		compare
+stack2:		compare
+==:		true
+!=:		false
+<:		false
+>:		false
+<=:		true
+>=:		true
+[31m---------------------
+#### stack timer ####
+mcs	= 74
+ms	= 0
+s	= 0
+---------------------[0m
+[31m###### vector ######
+vector:				default
+vector of strings:		hi
+vector after push_back:		bye
+vector's max_size():		768614336404564650
+vector's size:			11
+vector's capacity:		20
+vector after assign :		aloha
+vector after operator= :	aloha
+vectors are equals	
+vector after resize 1 :		aloha
+vectors are not equals after resize	
+vector1 are smaller after resize	
+vector after resize 1 :		hi
+vector after resize 1 :		bye
+vector's capacity:		100
+[32m----------------------
+#### vector timer ####
+mcs	= 63
+ms	= 0
+s	= 0
+----------------------[0m

@@ -82,7 +82,6 @@ namespace ft {
 			template< class InputIt >
 			void assign( InputIt first, InputIt last, typename ft::enable_if<std::numeric_limits<InputIt>::value >::type ) {
 				size_type count = _count(first, last);
-				std::cout << "ASSIGN template\n";
 				if (count > this->max_size())
 					throw std::length_error("length_error");
 				if (count < _capacity) {
@@ -107,7 +106,6 @@ namespace ft {
 			}
 
 			void assign( size_type count, const T& value ) {
-				std::cout << "ASSIGN int int\n";
 				if (count > this->max_size())
 					throw std::length_error("length_error");
 				if (count < _capacity) {
@@ -390,7 +388,7 @@ namespace ft {
 				}
 			}
 
-			void resize( size_type count, T value = T() ) {
+			void resize( size_type count, T value = T() ) { //check!!
 				if (count > this->max_size())
 					throw std::length_error("length_error");
 				if (count < _size) {
@@ -459,7 +457,7 @@ namespace ft {
 	};
 
 	template <class InputIt1, class InputIt2>
-	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2)
+	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) //check!!!
 	{
 		while (first1 != last1)
 		{
@@ -489,7 +487,7 @@ namespace ft {
 	}
 
 	template <class T, class Alloc>
-	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {  //check!
 		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	}
 
@@ -510,12 +508,12 @@ namespace ft {
 
 	template <class T, class Alloc>
 	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-		return (rhs <= lhs);
+		return (rhs < lhs);
 	}
 
 	template <class T, class Alloc>
 	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
-		return (rhs < lhs);
+		return (rhs <= lhs);
 	}
 
 

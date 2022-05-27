@@ -169,7 +169,7 @@ void    vectorTest() {
     vector1.resize(2, "hi");
     std::cout << "vector after resize 1 :\t\t" << vector1[1] << std::endl;
     if (vector1 != vector)
-        std::cout << "vectors are not equals after resize\t" << std::endl;
+        std::cout << "vectors are not equals after resize\t" << std::endl;  //!!!
     if (vector1 <= vector)
         std::cout << "vector1 are smaller after resize\t" << std::endl;
     vector1.resize(5, "hi");
@@ -189,7 +189,7 @@ void    vectorTest() {
 int main() {
     std::cout << GREEN << NS << RESET << std::endl;
 
-    // stackTest();
+    stackTest();
     vectorTest();
 
 	return 0;
