@@ -36,15 +36,6 @@ namespace ft {
 	struct bidirectional_iterator_tag : public forward_iterator_tag {};
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
-	// template<class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
-	// struct iterator {
-	// 	typedef typename ft::iterator_traits<Iter>::iterator_category iterator_category;
-	// 	typedef typename ft::iterator_traits<Iter>::value_type value_type;
-	// 	typedef typename ft::iterator_traits<Iter>::difference_type difference_type;
-	// 	typedef typename ft::iterator_traits<Iter>::pointer pointer;
-	// 	typedef typename ft::iterator_traits<Iter>::reference reference;
-	// };
-
     template<class Iter>
 	class Shmiterator {
 

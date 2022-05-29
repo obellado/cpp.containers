@@ -388,7 +388,7 @@ namespace ft {
 				}
 			}
 
-			void resize( size_type count, T value = T() ) { //check!!
+			void resize( size_type count, T value = T() ) {
 				if (count > this->max_size())
 					throw std::length_error("length_error");
 				if (count < _size) {
