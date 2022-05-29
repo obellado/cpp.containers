@@ -394,7 +394,7 @@ namespace ft {
 				if (count < _size) {
 					for (size_type i = count; i < _size; i++)
 						_alloc.destroy(&_pointer[i]);
-				} else if (count < _capacity){
+				} else if (count < _capacity) {
 					_copy(_size, count, value);
 				} else {
 					try {
@@ -404,11 +404,11 @@ namespace ft {
 						_capacity = count * 2;
 						_pointer = _newPointer;
 						_copy(_size, count, value);
-						_size = count;
 					} catch (std::bad_alloc &e) {
 						throw e;
 					}
 				}
+				_size = count;
 			}
 
 			void swap (vector& other) {
@@ -445,10 +445,8 @@ namespace ft {
 			}
 
 			template<typename InputIt>
-			size_type _count(InputIt first, InputIt last)
-			{
+			size_type _count(InputIt first, InputIt last){
 				size_type count;
-
 				count = 0;
 				for ( ; first != last; ++first)
 					count++;
@@ -457,23 +455,22 @@ namespace ft {
 	};
 
 	template <class InputIt1, class InputIt2>
-	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) //check!!!
-	{
-		while (first1 != last1)
-		{
-			if (*first1 != *first2)
+	bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) {
+		while (first1 != last1 || first2 != last2){
+			if (*first1 != *first2) {
 				return (false);
+			}
 			first1++;
 			first2++;
 		}
+		if (first1 != last1 || first2 != last2)
+			return (false);
 		return (true);
 	}
 
 	template <class InputIterator1, class InputIterator2>
-	bool _compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
-	{
-		while (first1 != last1 && first2 != last2)
-		{
+	bool _compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2){
+		while (first1 != last1 && first2 != last2){
 			if (*first1 < *first2)
 				return (true);
 			if (*first2 < *first1)
@@ -487,8 +484,8 @@ namespace ft {
 	}
 
 	template <class T, class Alloc>
-	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {  //check!
-		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template <class T, class Alloc>

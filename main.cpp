@@ -163,11 +163,15 @@ void    vectorTest() {
 
     ft::vector<std::string> vector1(5, "hi");
     vector1 = vector;
+    std::cout << vector1.size() << " | " << vector.size() << std::endl;
     std::cout << "vector after operator= :\t" << vector1[1] << std::endl;
     if (vector1 == vector)
         std::cout << "vectors are equals\t" << std::endl;
     vector1.resize(2, "hi");
     std::cout << "vector after resize 1 :\t\t" << vector1[1] << std::endl;
+    if (vector1.size() != vector.size())
+        std::cout << "vectors sizes are not equals after resize\t" << std::endl;  //!!!
+    std::cout << vector1.size() << " | " << vector.size() << std::endl;
     if (vector1 != vector)
         std::cout << "vectors are not equals after resize\t" << std::endl;  //!!!
     if (vector1 <= vector)
